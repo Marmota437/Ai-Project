@@ -1,1 +1,8 @@
-fastapi~=0.103.2
+pydantic-settings
+python-jose
+passlib
+pydantic
+sqlmodel
+pydantic[email]
+fastapi
+python-multipart

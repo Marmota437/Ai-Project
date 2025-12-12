@@ -1,15 +1,14 @@
-from typing import Union
-
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from core.database import create_db_and_tables
+from api import auth, family
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_db_and_tables()
+    yield
 
+app = FastAPI(lifespan=lifespan)
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+app.include_router(auth.router, prefix="/auth", tags=["Auth"])
+app.include_router(family.router, prefix="/family", tags=["Family"])
