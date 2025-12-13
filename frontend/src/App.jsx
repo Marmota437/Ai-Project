@@ -1,35 +1,45 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// src/App.jsx
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import MainLayout from "./components/ui/Layout/MainLayout";
+
+// Import stron
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import FinancePage from './pages/FinancePage';
+import TasksPage from './pages/TasksPage';
+
+// Placeholder na join page
+const JoinFamilyPage = () => <div>Dołączanie do rodziny z kodu...</div>;
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <AuthProvider>
+      <Routes>
+        {/* Trasy publiczne */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/join" element={<JoinFamilyPage />} />
+
+        {/* Trasy chronione */}
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }>
+          {/* Domyślne przekierowanie z /dashboard na /dashboard/finance */}
+          <Route index element={<Navigate to="finance" replace />} />
+          
+          <Route path="finance" element={<FinancePage />} />
+          <Route path="tasks" element={<TasksPage />} />
+        </Route>
+
+        {/* Catch all - przekieruj na dashboard (lub login, jeśli niezalogowany) */}
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      </Routes>
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;
