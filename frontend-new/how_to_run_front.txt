@@ -1,0 +1,57 @@
+INSTRUKCJA URUCHOMIENIA FRONTENDU (React + Vite)
+================================================
+
+1. WYMAGANIA WSTĘPNE
+--------------------
+Musisz mieć zainstalowane Node.js (wersja 18 lub nowsza).
+Możesz sprawdzić wersję wpisując w terminalu:
+node -v
+
+
+2. INSTALACJA ZALEŻNOŚCI
+------------------------
+Otwórz terminal w folderze "frontend-new" i wpisz komendę:
+
+npm install
+
+To pobierze wszystkie biblioteki (React, Tailwind, Axios, itp.) do folderu node_modules.
+
+
+3. KONFIGURACJA ŚRODOWISKA (.env)
+---------------------------------
+Upewnij się, że w folderze "frontend-new" istnieje plik o nazwie ".env".
+Powinien on zawierać adres Twojego backendu:
+
+VITE_API_URL=http://localhost:8000
+
+(Domyślnie FastAPI działa na porcie 8000).
+
+
+4. URUCHOMIENIE WERSJI DEWELOPERSKIEJ
+-------------------------------------
+Aby uruchomić stronę w trybie edycji (z podglądem na żywo), wpisz:
+
+npm run dev
+
+W terminalu pojawi się link (zazwyczaj http://localhost:5173/).
+Kliknij go z wciśniętym Ctrl lub skopiuj do przeglądarki.
+
+
+5. BUDOWANIE WERSJI PRODUKCYJNEJ (Opcjonalne)
+---------------------------------------------
+Jeśli chcesz wygenerować gotowe pliki HTML/CSS/JS do wrzucenia na serwer (hosting):
+
+npm run build
+
+Gotowe pliki pojawią się w folderze "dist".
+
+
+6. ROZWIĄZYWANIE PROBLEMÓW
+--------------------------
+- Błąd "Failed to resolve import @hookform/resolvers/zod":
+  Wpisz: npm install @hookform/resolvers
+
+- Błąd połączenia z API (Network Error):
+  a) Sprawdź, czy backend działa.
+  b) Sprawdź, czy w backendzie (main.py) jest dodany CORS dla localhost:5173.
+  c) Sprawdź poprawność adresu w pliku .env.
