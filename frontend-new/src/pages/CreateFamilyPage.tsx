@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import { useForm, type SubmitHandler } from 'react-hook-form'; // <--- DODANO "type"
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
@@ -10,7 +10,7 @@ import { Button } from '../components/ui/Button';
 
 const createFamilySchema = z.object({
   name: z.string().min(3, "Nazwa rodziny musi mieć min. 3 znaki"),
-  monthlyAmount: z.number({ invalid_type_error: "Podaj kwotę" }).min(0, "Kwota nie może być ujemna"),
+  monthlyAmount: z.coerce.number().min(0, "Kwota nie może być ujemna"), 
 });
 
 type CreateFamilyData = z.infer<typeof createFamilySchema>;
@@ -19,11 +19,19 @@ export const CreateFamilyPage = () => {
   const navigate = useNavigate();
   const setUser = useAuthStore((state) => state.setUser);
   
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<CreateFamilyData>({
+  const { 
+    register, 
+    handleSubmit, 
+    formState: { errors, isSubmitting } 
+  } = useForm({
     resolver: zodResolver(createFamilySchema),
+    defaultValues: {
+      name: '',
+      monthlyAmount: 0
+    }
   });
 
-  const onSubmit = async (data: CreateFamilyData) => {
+  const onSubmit: SubmitHandler<CreateFamilyData> = async (data) => {
     try {
       await familyApi.create({
         name: data.name,
@@ -51,15 +59,15 @@ export const CreateFamilyPage = () => {
         <Input
           label="Nazwa Rodziny (np. Kowalscy)"
           {...register('name')}
-          error={errors.name?.message}
+          error={errors.name?.message as string} 
         />
 
         <Input
           label="Miesięczna składka (PLN)"
           type="number"
           step="0.01"
-          {...register('monthlyAmount', { valueAsNumber: true })}
-          error={errors.monthlyAmount?.message}
+          {...register('monthlyAmount')}
+          error={errors.monthlyAmount?.message as string}
         />
 
         <div className="flex gap-3 mt-6">
