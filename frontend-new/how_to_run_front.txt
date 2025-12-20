@@ -51,6 +51,8 @@ Gotowe pliki pojawią się w folderze "dist".
 - Błąd "Failed to resolve import @hookform/resolvers/zod":
   Wpisz: npm install @hookform/resolvers
 
+  npm install react-hot-toast
+
 - Błąd połączenia z API (Network Error):
   a) Sprawdź, czy backend działa.
   b) Sprawdź, czy w backendzie (main.py) jest dodany CORS dla localhost:5173.

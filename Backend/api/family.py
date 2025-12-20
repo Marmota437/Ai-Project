@@ -5,6 +5,8 @@ from api.deps import get_current_user
 from core.database import get_session
 from models.family import Family
 from models.user import User
+from typing import List
+
 
 router = APIRouter()
 
@@ -36,3 +38,10 @@ def join_family(code: str, user: User = Depends(get_current_user), session: Sess
     session.add(user)
     session.commit()
     return {"msg": "Dołączono!"}
+
+@router.get("/members", response_model=List[User])
+def get_family_members(user: User = Depends(get_current_user), session: Session = Depends(get_session)):
+    if not user.family_id:
+        return []
+    statement = select(User).where(User.family_id == user.family_id)
+    return session.exec(statement).all()
