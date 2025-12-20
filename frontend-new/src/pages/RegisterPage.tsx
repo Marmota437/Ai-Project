@@ -32,49 +32,43 @@ export const RegisterPage = () => {
   });
 
   const onSubmit = async (data: RegisterFormData) => {
-    console.log("🚀 1. Kliknięto przycisk rejestracji. Dane z formularza:", data);
+    console.log(" 1. Kliknięto przycisk rejestracji. Dane z formularza:", data);
     setServerError(null);
     
     try {
-      // KROK 1: Rejestracja
-      console.log("📤 2. Wysyłam zapytanie do /auth/register...");
+      console.log(" 2. Wysyłam zapytanie do /auth/register...");
       const registerResponse = await authApi.register({
         email: data.email,
         password: data.password,
-        full_name: data.name // Upewnij się, że mapujesz name -> full_name
+        full_name: data.name 
       });
-      console.log("✅ 3. Rejestracja udana! Odpowiedź backendu:", registerResponse);
+      console.log(" 3. Rejestracja udana! Odpowiedź backendu:", registerResponse);
 
-      // KROK 2: Logowanie
-      console.log("📤 4. Próbuję się automatycznie zalogować...");
+      console.log(" 4. Próbuję się automatycznie zalogować...");
       const loginResponse = await authApi.login({
         email: data.email,
         password: data.password
       });
-      console.log("✅ 5. Logowanie udane! Token:", loginResponse.access_token);
+      console.log(" 5. Logowanie udane! Token:", loginResponse.access_token);
       
       setToken(loginResponse.access_token);
 
-      // KROK 3: Pobranie Usera
-      console.log("📤 6. Pobieram dane użytkownika (/auth/me)...");
+      console.log(" 6. Pobieram dane użytkownika (/auth/me)...");
       const user = await authApi.getMe();
-      console.log("✅ 7. Dane użytkownika pobrane:", user);
+      console.log(" 7. Dane użytkownika pobrane:", user);
       
       setUser(user);
 
-      // Jeśli był kod zaproszenia
       if (familyCode) {
-         console.log("💌 8. Wykryto kod zaproszenia, próbuję dołączyć...");
-         // Tutaj byłoby familyApi.join(familyCode)
+         console.log(" 8. Wykryto kod zaproszenia, próbuję dołączyć...");
       }
 
-      console.log("🏁 9. Przekierowuję na Dashboard...");
+      console.log(" 9. Przekierowuję na Dashboard...");
       navigate('/dashboard');
 
     } catch (error: any) {
-      console.error("❌ WYSTĄPIŁ BŁĄD:", error);
+      console.error(" WYSTĄPIŁ BŁĄD:", error);
       
-      // Sprawdźmy co dokładnie zwrócił axios
       if (error.response) {
         console.error("Status błędu:", error.response.status);
         console.error("Dane błędu:", error.response.data);
