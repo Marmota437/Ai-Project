@@ -52,6 +52,7 @@ Gotowe pliki pojawią się w folderze "dist".
   Wpisz: npm install @hookform/resolvers
 
   npm install react-hot-toast
+  npm install -D tailwindcss@3.4.17 postcss autoprefixer
 
 - Błąd połączenia z API (Network Error):
   a) Sprawdź, czy backend działa.

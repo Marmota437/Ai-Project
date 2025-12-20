@@ -45,3 +45,15 @@ def get_family_members(user: User = Depends(get_current_user), session: Session 
         return []
     statement = select(User).where(User.family_id == user.family_id)
     return session.exec(statement).all()
+
+
+@router.get("/my-family", response_model=Family)
+def get_my_family(user: User = Depends(get_current_user), session: Session = Depends(get_session)):
+    if not user.family_id:
+        raise HTTPException(404, "Nie należysz do rodziny")
+
+    family = session.get(Family, user.family_id)
+    if not family:
+        raise HTTPException(404, "Rodzina nie znaleziona")
+
+    return family

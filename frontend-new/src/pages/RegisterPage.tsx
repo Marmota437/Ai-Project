@@ -7,6 +7,7 @@ import { useAuthStore } from '../stores/authStore';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { useState } from 'react';
+import { Users, ArrowRight } from 'lucide-react';
 
 // Schemat walidacji
 const registerSchema = z.object({
@@ -32,49 +33,47 @@ export const RegisterPage = () => {
   });
 
   const onSubmit = async (data: RegisterFormData) => {
-    console.log(" 1. Kliknięto przycisk rejestracji. Dane z formularza:", data);
+    console.log("🚀 1. Kliknięto przycisk rejestracji. Dane z formularza:", data);
     setServerError(null);
     
     try {
-      console.log(" 2. Wysyłam zapytanie do /auth/register...");
+      console.log("📤 2. Wysyłam zapytanie do /auth/register...");
       const registerResponse = await authApi.register({
         email: data.email,
         password: data.password,
         full_name: data.name 
       });
-      console.log(" 3. Rejestracja udana! Odpowiedź backendu:", registerResponse);
+      console.log("✅ 3. Rejestracja udana! Odpowiedź backendu:", registerResponse);
 
-      console.log(" 4. Próbuję się automatycznie zalogować...");
+      console.log("📤 4. Próbuję się automatycznie zalogować...");
       const loginResponse = await authApi.login({
         email: data.email,
         password: data.password
       });
-      console.log(" 5. Logowanie udane! Token:", loginResponse.access_token);
+      console.log("✅ 5. Logowanie udane! Token:", loginResponse.access_token);
       
       setToken(loginResponse.access_token);
 
-      console.log(" 6. Pobieram dane użytkownika (/auth/me)...");
+      console.log("📤 6. Pobieram dane użytkownika (/auth/me)...");
       const user = await authApi.getMe();
-      console.log(" 7. Dane użytkownika pobrane:", user);
+      console.log("✅ 7. Dane użytkownika pobrane:", user);
       
       setUser(user);
 
       if (familyCode) {
-         console.log(" 8. Wykryto kod zaproszenia, próbuję dołączyć...");
+         console.log("💌 8. Wykryto kod zaproszenia, próbuję dołączyć...");
+         // Tutaj w przyszłości można dodać automatyczne dołączanie
       }
 
-      console.log(" 9. Przekierowuję na Dashboard...");
+      console.log("🏁 9. Przekierowuję na Dashboard...");
       navigate('/dashboard');
 
     } catch (error: any) {
-      console.error(" WYSTĄPIŁ BŁĄD:", error);
+      console.error("❌ WYSTĄPIŁ BŁĄD:", error);
       
       if (error.response) {
-        console.error("Status błędu:", error.response.status);
-        console.error("Dane błędu:", error.response.data);
         setServerError(error.response.data?.detail || "Błąd serwera");
       } else if (error.request) {
-        console.error("Brak odpowiedzi od serwera (Backend nie działa lub CORS blokuje)");
         setServerError("Serwer nie odpowiada. Sprawdź czy backend działa.");
       } else {
         setServerError("Wystąpił nieznany błąd aplikacji.");
@@ -83,56 +82,89 @@ export const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full p-8 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-center mb-6">
-          {familyCode ? "Dołącz do rodziny" : "Załóż nowe konto"}
-        </h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 relative overflow-hidden p-4">
+      {/* Ozdobne tło (Blobs) */}
+      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+
+      <div className="max-w-md w-full bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 relative z-10 overflow-hidden">
         
-        {familyCode && (
-          <div className="mb-4 p-3 bg-blue-50 text-blue-700 rounded text-sm text-center">
-            Rejestrujesz się z kodem zaproszenia: <strong>{familyCode}</strong>
+        {/* Górny pasek dekoracyjny */}
+        <div className="h-2 bg-gradient-to-r from-blue-500 to-purple-500 w-full"></div>
+
+        <div className="p-8">
+          {/* Nagłówek z Ikoną */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-50 text-blue-600 mb-4 shadow-sm border border-blue-100">
+              <Users size={24} />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {familyCode ? "Dołącz do rodziny" : "Stwórz konto"}
+            </h2>
+            <p className="text-gray-500 text-sm mt-2">
+              Zacznij zarządzać domowym budżetem i zadaniami.
+            </p>
           </div>
-        )}
+          
+          {/* Alert o kodzie zaproszenia */}
+          {familyCode && (
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-100 text-blue-700 rounded-lg text-sm flex items-center gap-3">
+              <span className="text-xl">📩</span>
+              <div>
+                Rejestrujesz się z kodem zaproszenia: <br/>
+                <strong className="font-mono text-base">{familyCode}</strong>
+              </div>
+            </div>
+          )}
 
-        {serverError && (
-          <div className="mb-4 p-3 bg-red-50 text-red-700 rounded text-sm">
-            {serverError}
+          {/* Alert błędu */}
+          {serverError && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-lg text-sm flex items-center gap-2 animate-pulse">
+              <span>⚠️</span>
+              {serverError}
+            </div>
+          )}
+
+          {/* Formularz */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <Input 
+              label="Imię i Nazwisko" 
+              placeholder="np. Jan Kowalski"
+              {...register('name')} 
+              error={errors.name?.message}
+              className="bg-gray-50 border-gray-200 focus:bg-white"
+            />
+            <Input 
+              label="Adres Email" 
+              type="email" 
+              placeholder="twoj@email.com"
+              {...register('email')} 
+              error={errors.email?.message} 
+              className="bg-gray-50 border-gray-200 focus:bg-white"
+            />
+            <Input 
+              label="Hasło" 
+              type="password" 
+              placeholder="••••••••"
+              {...register('password')} 
+              error={errors.password?.message} 
+              className="bg-gray-50 border-gray-200 focus:bg-white"
+            />
+
+            <Button type="submit" isLoading={isSubmitting} className="w-full shadow-lg shadow-blue-500/20 mt-2">
+              Zarejestruj się <ArrowRight size={18} className="ml-2" />
+            </Button>
+          </form>
+
+          {/* Stopka */}
+          <div className="mt-8 pt-6 border-t border-gray-100 text-center text-sm text-gray-500">
+            Masz już konto?{' '}
+            <Link to="/login" className="text-blue-600 font-semibold hover:text-blue-700 hover:underline transition-colors">
+              Zaloguj się
+            </Link>
           </div>
-        )}
-
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Input 
-            label="Imię" 
-            {...register('name')} 
-            error={errors.name?.message} 
-          />
-          <Input 
-            label="Email" 
-            type="email" 
-            {...register('email')} 
-            error={errors.email?.message} 
-          />
-          <Input 
-            label="Hasło" 
-            type="password" 
-            {...register('password')} 
-            error={errors.password?.message} 
-          />
-
-          <Button type="submit" isLoading={isSubmitting} className="mt-4">
-            Zarejestruj się
-          </Button>
-        </form>
-
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Masz już konto?{' '}
-          <Link to="/login" className="text-blue-600 hover:underline">
-            Zaloguj się
-          </Link>
-        </p>
+        </div>
       </div>
     </div>
   );
 };
-

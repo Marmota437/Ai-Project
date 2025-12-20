@@ -24,5 +24,10 @@ export const familyApi = {
   join: async (code: string) => {
     const response = await api.post(`/family/join?code=${encodeURIComponent(code)}`);
     return response.data;
+  },
+
+  getMyFamily: async () => {
+    const response = await api.get<Family>('/family/my-family');
+    return response.data;
   }
 };

@@ -8,8 +8,27 @@ import { TasksPage } from './pages/TasksPage';
 import { JoinFamilyPage } from './pages/JoinFamilyPage';
 import { CreateFamilyPage } from './pages/CreateFamilyPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { MainLayout } from './components/ui/Layout/MainLayout';
 
 export const router = createBrowserRouter([
+  // Trasa chroniona
+  {
+    element: <ProtectedRoute />,
+    children: [
+      {
+        // Tu wstawiamy MainLayout jako "opakowanie"
+        element: <MainLayout />, 
+        children: [
+          { path: '/dashboard', element: <DashboardPage /> },
+          { path: '/create-family', element: <CreateFamilyPage /> },
+          { path: '/join', element: <JoinFamilyPage /> },
+          { path: '/finances', element: <FinancesPage /> },
+          { path: '/tasks', element: <TasksPage /> },
+        ]
+      }
+    ],
+  },
+
   {
     path: '/',
     element: <LandingPage />,
