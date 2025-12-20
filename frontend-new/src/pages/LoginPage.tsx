@@ -7,7 +7,7 @@ import { useAuthStore } from '../stores/authStore';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { useState } from 'react';
-import { LogIn, ArrowRight } from 'lucide-react'; // Dodajemy ikony
+import { LogIn, ArrowRight } from 'lucide-react';
 
 // Schemat walidacji
 const loginSchema = z.object({
@@ -46,14 +46,14 @@ export const LoginPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 relative overflow-hidden p-4">
       
-      {/* Animowane tło (Blobs) - odwrócone kolory względem rejestracji dla urozmaicenia */}
-      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+      {/* TŁO: */}
+      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float-delayed"></div>
 
-      {/* Karta z efektem szkła */}
-      <div className="max-w-md w-full bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 relative z-10 overflow-hidden">
+      {/* KARTA: */}
+      <div className="max-w-md w-full bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 relative z-10 overflow-hidden animate-fade-in-up">
         
-        {/* Górny pasek dekoracyjny (Gradient) */}
+        {/* Górny pasek */}
         <div className="h-2 bg-gradient-to-r from-purple-500 to-blue-500 w-full"></div>
 
         <div className="p-8">
@@ -100,7 +100,12 @@ export const LoginPage = () => {
                 <a href="#" className="text-xs text-blue-600 hover:underline">Zapomniałeś hasła?</a>
             </div>
 
-            <Button type="submit" isLoading={isSubmitting} className="w-full shadow-lg shadow-purple-500/20 mt-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 border-0">
+            {/* Przycisk*/}
+            <Button 
+              type="submit" 
+              isLoading={isSubmitting} 
+              className="w-full shadow-lg shadow-purple-500/20 mt-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 border-0"
+            >
               Zaloguj się <ArrowRight size={18} className="ml-2" />
             </Button>
           </form>

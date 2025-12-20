@@ -97,3 +97,31 @@ def delete_task(task_id: int, user: User = Depends(get_current_user), session: S
     session.delete(task)
     session.commit()
     return {"msg": "Usunięto"}
+
+
+# 6. Edytuj zadanie (Tylko ADMIN RODZINY)
+@router.put("/{task_id}")
+def update_task(
+        task_id: int,
+        title: str,
+        assigned_to_id: Optional[int] = None,
+        user: User = Depends(get_current_user),
+        session: Session = Depends(get_session)
+):
+    task = session.get(Task, task_id)
+    if not task:
+        raise HTTPException(404, "Brak zadania")
+
+    # Sprawdzamy czy user jest administratorem rodziny
+    family = session.get(Family, user.family_id)
+    if family.owner_id != user.id:
+        raise HTTPException(403, "Tylko założyciel rodziny może edytować zadania")
+
+    # Aktualizacja pól
+    task.title = title
+    task.assigned_to_id = assigned_to_id
+
+    session.add(task)
+    session.commit()
+    session.refresh(task)
+    return task

@@ -42,5 +42,12 @@ export const tasksApi = {
   getMembers: async () => {
     const response = await api.get<UserBasic[]>('/family/members');
     return response.data;
+  },
+
+  update: async (taskId: number, title: string, assignedToId?: number) => {
+    const url = `/tasks/${taskId}?title=${encodeURIComponent(title)}` + 
+                (assignedToId ? `&assigned_to_id=${assignedToId}` : '');
+    const response = await api.put<Task>(url);
+    return response.data;
   }
 };
