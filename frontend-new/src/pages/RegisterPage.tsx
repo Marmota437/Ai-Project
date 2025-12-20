@@ -32,34 +32,59 @@ export const RegisterPage = () => {
   });
 
   const onSubmit = async (data: RegisterFormData) => {
+    console.log("🚀 1. Kliknięto przycisk rejestracji. Dane z formularza:", data);
     setServerError(null);
+    
     try {
-      // 1. Rejestracja
-      await authApi.register({
+      // KROK 1: Rejestracja
+      console.log("📤 2. Wysyłam zapytanie do /auth/register...");
+      const registerResponse = await authApi.register({
         email: data.email,
         password: data.password,
-        full_name: data.name // Mapujemy name z formularza na full_name backendu
+        full_name: data.name // Upewnij się, że mapujesz name -> full_name
       });
+      console.log("✅ 3. Rejestracja udana! Odpowiedź backendu:", registerResponse);
 
-      // 2. Automatyczne logowanie po rejestracji (UX improvement)
+      // KROK 2: Logowanie
+      console.log("📤 4. Próbuję się automatycznie zalogować...");
       const loginResponse = await authApi.login({
         email: data.email,
         password: data.password
       });
-      setToken(loginResponse.access_token);
+      console.log("✅ 5. Logowanie udane! Token:", loginResponse.access_token);
       
+      setToken(loginResponse.access_token);
+
+      // KROK 3: Pobranie Usera
+      console.log("📤 6. Pobieram dane użytkownika (/auth/me)...");
       const user = await authApi.getMe();
+      console.log("✅ 7. Dane użytkownika pobrane:", user);
+      
       setUser(user);
 
-      // Jeśli był kod zaproszenia, tutaj wywołamy API do dołączenia (zrobimy to w kolejnym kroku)
+      // Jeśli był kod zaproszenia
       if (familyCode) {
-         // TODO: Call joinFamily(familyCode)
+         console.log("💌 8. Wykryto kod zaproszenia, próbuję dołączyć...");
+         // Tutaj byłoby familyApi.join(familyCode)
       }
-      
+
+      console.log("🏁 9. Przekierowuję na Dashboard...");
       navigate('/dashboard');
+
     } catch (error: any) {
-      console.error(error);
-      setServerError(error.response?.data?.message || "Wystąpił błąd podczas rejestracji.");
+      console.error("❌ WYSTĄPIŁ BŁĄD:", error);
+      
+      // Sprawdźmy co dokładnie zwrócił axios
+      if (error.response) {
+        console.error("Status błędu:", error.response.status);
+        console.error("Dane błędu:", error.response.data);
+        setServerError(error.response.data?.detail || "Błąd serwera");
+      } else if (error.request) {
+        console.error("Brak odpowiedzi od serwera (Backend nie działa lub CORS blokuje)");
+        setServerError("Serwer nie odpowiada. Sprawdź czy backend działa.");
+      } else {
+        setServerError("Wystąpił nieznany błąd aplikacji.");
+      }
     }
   };
 
@@ -116,3 +141,4 @@ export const RegisterPage = () => {
     </div>
   );
 };
+
