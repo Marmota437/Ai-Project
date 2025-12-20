@@ -26,7 +26,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# ----------------------------------------------------------------------
 
 @app.get("/auth/me", response_model=UserRead, tags=["Auth"])
 def read_users_me(current_user: User = Depends(get_current_user)):
