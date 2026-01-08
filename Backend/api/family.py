@@ -6,7 +6,9 @@ from core.database import get_session
 from models.family import Family
 from models.user import User
 from typing import List
-
+from models.finance import SavingsPayment
+from datetime import datetime, timedelta
+from models.task import Task
 
 router = APIRouter()
 
@@ -57,3 +59,32 @@ def get_my_family(user: User = Depends(get_current_user), session: Session = Dep
         raise HTTPException(404, "Rodzina nie znaleziona")
 
     return family
+
+@router.get("/alerts")
+def get_dashboard_alerts(user: User = Depends(get_current_user), session: Session = Depends(get_session)):
+    if not user.family_id:
+        return {"has_family": False}
+
+    now = datetime.utcnow()
+    stmt_savings = select(SavingsPayment).where(
+        SavingsPayment.user_id == user.id,
+        SavingsPayment.date >= datetime(now.year, now.month, 1)
+    )
+    paid_this_month = session.exec(stmt_savings).first() is not None
+
+    three_days_ahead = now + timedelta(days=3)
+
+    stmt_tasks = select(Task).where(
+        Task.assigned_to_id == user.id,
+        Task.status != "DONE",  # Tylko niewykonane
+        Task.deadline <= three_days_ahead
+    )
+    upcoming_tasks = session.exec(stmt_tasks).all()
+
+    return {
+        "has_family": True,
+        "savings_paid_this_month": paid_this_month,
+        "upcoming_tasks_count": len(upcoming_tasks),
+        "upcoming_tasks": upcoming_tasks,
+        "alert_message": "Pamiętaj o wpłacie!" if not paid_this_month else "Wszystko opłacone."
+    }
