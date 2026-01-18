@@ -71,7 +71,7 @@ source .venv/bin/activate
 Zainstaluj wymagane biblioteki:
 
 ```bash
-pip install fastapi "uvicorn[standard]" sqlmodel passlib[bcrypt] python-jose[cryptography] python-multipart
+pip install -r requirements.txt
 ```
 
 Uruchom serwer:
